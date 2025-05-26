@@ -39,6 +39,9 @@ export default function Tetris() {
   const [completedRows, setCompletedRows] = useState([])
   const audioRef = useRef(null)
   const dropInterval = useRef(null)
+  const gameContainerRef = useRef(null)
+  const [isFullscreen, setIsFullscreen] = useState(false)
+  const [isTouch, setIsTouch] = useState(false)
 
   const checkCollision = (x, y, shape) => {
     for (let row = 0; row < shape.length; row++) {
@@ -224,6 +227,30 @@ export default function Tetris() {
     }
   }, [gameOver, isMusicPlaying])
 
+  // Detect touch device
+  useEffect(() => {
+    setIsTouch('ontouchstart' in window || navigator.maxTouchPoints > 0)
+  }, [])
+
+  // Fullscreen toggle
+  const toggleFullscreen = () => {
+    if (!isFullscreen) {
+      if (gameContainerRef.current.requestFullscreen) {
+        gameContainerRef.current.requestFullscreen()
+      } else if (gameContainerRef.current.webkitRequestFullscreen) {
+        gameContainerRef.current.webkitRequestFullscreen()
+      }
+      setIsFullscreen(true)
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen()
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen()
+      }
+      setIsFullscreen(false)
+    }
+  }
+
   const resetGame = () => {
     setBoard(createEmptyBoard())
     setCurrentPiece(null)
@@ -251,37 +278,77 @@ export default function Tetris() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-8">
-      <h1 className="text-6xl font-bold mb-8 text-gray-900">Tetris</h1>
-      <div className="bg-white p-8 rounded-xl shadow-2xl">
-        <div 
-          className="grid bg-gray-300" 
-          style={{ 
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-2 sm:p-8">
+      <h1 className="text-4xl sm:text-6xl font-bold mb-4 sm:mb-8 text-gray-900">Tetris</h1>
+      <div ref={gameContainerRef} className="bg-white p-2 sm:p-8 rounded-xl shadow-2xl flex flex-col items-center w-full max-w-[95vw] sm:max-w-none">
+        <div
+          className="grid mx-auto"
+          style={{
             gridTemplateColumns: `repeat(${BOARD_WIDTH}, 1fr)`,
-            width: `${BOARD_WIDTH * 30}px`,
-            height: `${BOARD_HEIGHT * 30}px`,
-            border: '2px solid #e5e7eb'
+            width: '90vw',
+            maxWidth: `${BOARD_WIDTH * 32}px`,
+            height: '135vw',
+            maxHeight: `${BOARD_HEIGHT * 32}px`,
+            border: '2px solid #e5e7eb',
+            aspectRatio: `${BOARD_WIDTH}/${BOARD_HEIGHT}`,
+            background: '#f3f4f6'
           }}
         >
-          {board.map((row, y) => 
+          {board.map((row, y) =>
             row.map((_, x) => (
               <AnimatePresence key={`${y}-${x}`}>
-                <motion.div 
+                <motion.div
                   initial={false}
                   animate={{
                     opacity: completedRows.includes(y) ? 0 : 1,
                     scale: completedRows.includes(y) ? 1.1 : 1,
                   }}
                   transition={{ duration: 0.3 }}
-                  className={`w-[30px] h-[30px] ${renderCell(x, y) || 'bg-gray-100'}`}
-                  style={{ border: '1px solid #e5e7eb' }}
+                  className={`w-full h-full border border-gray-300 ${renderCell(x, y) || 'bg-gray-100'}`}
+                  style={{ aspectRatio: '1/1' }}
                 />
               </AnimatePresence>
             ))
           )}
         </div>
+        {/* Fullscreen Button */}
+        <button
+          onClick={toggleFullscreen}
+          className="mt-4 px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 text-base font-semibold shadow"
+        >
+          {isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
+        </button>
+        {/* Mobile Controls */}
+        {isTouch && (
+          <div className="flex flex-col gap-2 mt-6 w-full items-center">
+            <div className="flex gap-4 justify-center">
+              <button
+                aria-label="Left"
+                className="bg-purple-500 text-white rounded-full w-14 h-14 text-2xl flex items-center justify-center shadow-lg active:scale-95"
+                onClick={moveLeft}
+              >←</button>
+              <button
+                aria-label="Rotate"
+                className="bg-pink-500 text-white rounded-full w-14 h-14 text-2xl flex items-center justify-center shadow-lg active:scale-95"
+                onClick={rotate}
+              >⟳</button>
+              <button
+                aria-label="Right"
+                className="bg-purple-500 text-white rounded-full w-14 h-14 text-2xl flex items-center justify-center shadow-lg active:scale-95"
+                onClick={moveRight}
+              >→</button>
+            </div>
+            <div className="flex justify-center mt-2">
+              <button
+                aria-label="Down"
+                className="bg-purple-700 text-white rounded-full w-14 h-14 text-2xl flex items-center justify-center shadow-lg active:scale-95"
+                onClick={moveDown}
+              >↓</button>
+            </div>
+          </div>
+        )}
       </div>
-      <div className="mt-8 text-2xl font-bold text-gray-900">Score: {score}</div>
+      <div className="mt-6 text-2xl font-bold text-gray-900">Score: {score}</div>
       <div className="mt-2 text-xl text-gray-800">Level: {level}</div>
       <div className="mt-4 text-lg text-gray-600 bg-white/80 px-6 py-2 rounded-full backdrop-blur-sm">
         Use arrow keys to play: ← → ↓ (rotate: ↑)
@@ -292,13 +359,13 @@ export default function Tetris() {
         </div>
       )}
       <div className="flex gap-6 mt-8">
-        <Button 
+        <Button
           onClick={resetGame}
           className="px-8 py-6 text-lg font-semibold bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
         >
           {gameOver ? 'Play Again' : 'Reset Game'}
         </Button>
-        <Button 
+        <Button
           onClick={toggleMusic}
           className="px-8 py-6 text-lg font-semibold bg-white border-2 border-purple-600 text-purple-600 hover:bg-purple-50 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
         >
