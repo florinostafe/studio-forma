@@ -141,7 +141,7 @@ export default function FAQ() {
                 <ChevronDown className="ml-2 w-5 h-5 group-hover:translate-y-1 transition-transform" />
               </Link>
               <Link
-                href="mailto:hello@studioforma.com"
+                href="mailto:contact@studioforma.ro"
                 className="inline-flex items-center px-8 py-4 bg-white text-gray-900 font-semibold rounded-full border border-gray-200 hover:bg-gray-50 hover:shadow-xl hover:scale-105 transition-all duration-300"
               >
                 Email Us Directly

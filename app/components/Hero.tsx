@@ -22,7 +22,7 @@ export default function Hero() {
           {/* Badge */}
           <div className="inline-flex items-center px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-purple-200 shadow-lg">
             <Sparkles className="w-4 h-4 text-purple-600 mr-2" />
-            <span className="text-sm font-medium text-purple-700">Creative Excellence Since 2024</span>
+            <span className="text-sm font-medium text-purple-700">Creative Excellence Since 2025</span>
           </div>
 
           {/* Main Heading */}

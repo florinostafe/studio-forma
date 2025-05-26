@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
-import { Mail, Phone, MapPin, Clock, Send, CheckCircle, AlertCircle, Instagram, Linkedin, Eye } from "lucide-react"
+import { Mail, Phone, MapPin, Clock, Send, CheckCircle, AlertCircle, Instagram, Linkedin, Eye, Github } from "lucide-react"
 
 const contactInfo = [
   {
@@ -36,19 +36,19 @@ const socialLinks = [
   {
     name: "Instagram",
     icon: Instagram,
-    url: "https://instagram.com/studioforma",
+    url: "https://www.instagram.com/soare_ama",
     color: "hover:bg-pink-600",
   },
   {
     name: "LinkedIn",
     icon: Linkedin,
-    url: "https://linkedin.com/company/studioforma",
+    url: "https://linkedin.com/in/florin-ostafe",
     color: "hover:bg-blue-600",
   },
   {
     name: "Behance",
-    icon: Eye,
-    url: "https://behance.net/studioforma",
+    icon: Github,
+    url: "https://github.com/florinostafe/studio-forma",
     color: "hover:bg-blue-500",
   },
 ]
